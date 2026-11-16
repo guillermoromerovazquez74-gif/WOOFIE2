@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Woofie | Identificación</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f3ef;
+  text-align: center;
+  padding: 25px;
+  color: #333;
+}
+
+.contenedor {
+  background: white;
+  max-width: 400px;
+  margin: auto;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px #0002;
+}
+
+img {
+  width: 130px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+button {
+  background: #76a99b;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  width: 100%;
+  margin-top: 15px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#resultado {
+  margin-top: 15px;
+  overflow-wrap: anywhere;
+}
+</style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+<h1>🐾 Woofie</h1>
+<p>¡Hola! ¿Encontraste a este perrito?</p>
+
+<img src="https://placehold.co/300x300?text=Foto+del+perro"
+alt="Fotografía del perro">
+
+<h2>Max</h2>
+<p><b>Raza:</b> Labrador</p>
+<p><b>Color:</b> Café</p>
+<p><b>Edad:</b> 3 años</p>
+
+<hr>
+
+<h3>¿Encontraste a Max?</h3>
+<p>Comparte tu ubicación para ayudar a reunirlo con su familia.</p>
+
+<button onclick="obtenerUbicacion()">
+Reportar ubicación
+</button>
+
+<div id="resultado"></div>
+
+</div>
+
+<script>
+
+function obtenerUbicacion() {
+
+  const resultado = document.getElementById("resultado");
+
+  if (!navigator.geolocation) {
+    resultado.innerHTML = "Tu navegador no permite obtener la ubicación.";
+    return;
+  }
+
+  resultado.innerHTML = "Solicitando ubicación...";
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position) {
+
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      const precision = position.coords.accuracy;
+
+      const mapa = `https://www.google.com/maps?q=${lat},${lon}`;
+
+      resultado.innerHTML = `
+        <h3>¡Ubicación obtenida!</h3>
+        <p>Precisión aproximada: ${Math.round(precision)} metros</p>
+        <p>Fecha: ${new Date().toLocaleString()}</p>
+        <a href="${mapa}" target="_blank">
+          Ver ubicación en el mapa
+        </a>
+        <br><br>
+        <button onclick="compartirUbicacion('${mapa}')">
+          Compartir ubicación con el dueño
+        </button>
+      `;
+    },
+
+    function(error) {
+
+  let mensaje = "";
+
+  switch(error.code) {
+    case 1:
+      mensaje = "Permiso de ubicación denegado.";
+      break;
+
+    case 2:
+      mensaje = "Ubicación no disponible. Revisa el GPS.";
+      break;
+
+    case 3:
+      mensaje = "Se agotó el tiempo para obtener la ubicación.";
+      break;
+
+    default:
+      mensaje = "Error desconocido: " + error.message;
+  }
+
+  resultado.innerHTML = mensaje;
+},
+
+    {
+      enableHighAccuracy: true,
+      timeout: 20000,
+      maximumAge: 0
+    }
+
+  );
+}
+
+function compartirUbicacion(mapa) {
+
+  const telefono = "5210000000000";
+
+  const mensaje = encodeURIComponent(
+    "Hola, encontré a tu perro Max. Esta es su ubicación: " + mapa
+  );
+
+  window.open(
+    `https://wa.me/${telefono}?text=${mensaje}`,
+    "_blank"
+  );
+}
+
+</script>
+
+</body>
+</html>
